@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Secure AI Chat</title>
+
+<style>
+body {
+  background: #efeae2;
+  font-family: Arial;
+}
+
+.chat {
+  width: 420px;
+  height: 600px;
+  background: #efeae2;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.2);
+}
+
+.header {
+  background: #075e54;
+  color: white;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.msg {
+  max-width: 70%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.me {
+  background: #dcf8c6;
+  margin-left: auto;
+}
+
+.other {
+  background: white;
+  margin-right: auto;
+}
+
+.system {
+  background: #ffe0a3;
+  text-align: center;
+  margin: 10px auto;
+}
+
+.input {
+  display: flex;
+  padding: 10px;
+  background: white;
+}
+
+input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+}
+
+button {
+  margin-left: 8px;
+  background: #075e54;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+}
+
+pre {
+  background: black;
+  color: lime;
+  font-size: 12px;
+  padding: 8px;
+  overflow-x: auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat">
+  <div class="header">
+    Secure AI Chat
+    <select id="user">
+      <option value="alice">Alice</option>
+      <option value="bob">Bob</option>
+    </select>
+  </div>
+
+  <div class="messages" id="messages"></div>
+
+  <div class="input">
+    <input id="text" placeholder="Type a message">
+    <button onclick="send()">Send</button>
+  </div>
+
+  <pre id="payload"></pre>
+</div>
+
+<script>
+const ws = new WebSocket("ws://127.0.0.1:8000/ws/chat");
+
+ws.onmessage = e => {
+  const data = JSON.parse(e.data);
+  addMsg(data.sender, data.text);
+};
+
+function addMsg(sender, text, system=false) {
+  const div = document.createElement("div");
+  div.className = system ? "msg system"
+    : sender === user.value ? "msg me" : "msg other";
+  div.innerText = system ? text : `${sender}: ${text}`;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+async function send() {
+  const text = document.getElementById("text").value;
+  if (!text) return;
+
+  const res = await fetch("http://127.0.0.1:8000/moderate", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({text})
+  }).then(r => r.json());
+
+  if (res.status === "BLOCKED") {
+    addMsg("", "🚫 Message blocked by safety system", true);
+    return;
+  }
+
+  const encrypted = {
+    sender: user.value,
+    text: btoa(text),
+    aes_key: "AES-256-KEY-DEMO",
+    timestamp: new Date()
+  };
+
+  payload.innerText = JSON.stringify(encrypted, null, 2);
+
+  ws.send(JSON.stringify({
+    sender: user.value,
+    text
+  }));
+
+  document.getElementById("text").value = "";
+}
+</script>
+
+</body>
+</html>
