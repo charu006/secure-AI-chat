@@ -1,8 +1,8 @@
-# Secure AI Chat 🔐🤖
+# Secure AI Chat 
 
 Secure AI Chat is a real-time messaging application designed to demonstrate secure communication using modern cryptographic techniques and AI-based safety controls. The project focuses on protecting user privacy while ensuring responsible communication.
 
-## 🔑 Key Features
+## Key Features
 
 - **End-to-End Encryption (E2EE)**  
   Messages are encrypted on the sender’s side and decrypted only by the intended receiver.
@@ -23,7 +23,7 @@ Secure AI Chat is a real-time messaging application designed to demonstrate secu
   - Sender identity is clearly displayed.
   - Blocked messages are visually indicated.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend:** HTML, CSS, JavaScript  
 - **Backend:** FastAPI (Python)  
@@ -31,10 +31,10 @@ Secure AI Chat is a real-time messaging application designed to demonstrate secu
 - **Cryptography:** AES, RSA  
 - **Deployment:** GitHub Pages (Frontend)
 
-## 🎯 Purpose
+## Purpose
 
 This project was developed as an academic capstone to demonstrate secure communication, encryption principles, and AI-assisted moderation in a messaging system. It is suitable for academic evaluation and future enhancements.
 
 ---
 
-👩‍💻 Developed by: Charu  
+ Developed by: Charu  
